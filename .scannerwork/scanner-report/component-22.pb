@@ -1,0 +1,1 @@
+ 2webXìhr$coverage/client/src/pages/index.html

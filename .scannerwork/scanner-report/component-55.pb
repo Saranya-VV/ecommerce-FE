@@ -1,0 +1,1 @@
+7 2jsX'hreslint.config.cjs

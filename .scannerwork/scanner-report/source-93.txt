@@ -1,0 +1,154 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
+import { vi } from "vitest";
+import configureStore from "redux-mock-store";
+import Product from "./Product";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Create a mock store
+const mockStore = configureStore([]);
+
+describe("Product Component", () => {
+  let store;
+
+  beforeEach(() => {
+    // Initial state of the Redux store
+    store = mockStore({
+      product: {
+        productData: [
+          {
+            _id: "1",
+            title: "Sample Product",
+            image: "sample-image-url",
+            price: 100,
+            oldPrice: 120,
+            description: "Sample product description",
+            category: "electronics",
+            isNew: true,
+          },
+        ],
+      },
+    });
+  });
+
+  const renderComponent = (state) => {
+    render(
+      <Provider store={store}>
+        <BrowserRouter>
+          <Product />
+          <ToastContainer />
+        </BrowserRouter>
+      </Provider>
+    );
+  };
+
+  it("should render product details correctly", () => {
+    // Mock location state with product data
+    vi.mock("react-router-dom", async () => {
+      const actual = await vi.importActual("react-router-dom");
+      return {
+        ...actual,
+        useLocation: () => ({
+          state: {
+            item: {
+              _id: "1",
+              title: "Sample Product",
+              image: "sample-image-url",
+              price: 100,
+              oldPrice: 120,
+              description: "Sample product description",
+              category: "electronics",
+              isNew: true,
+            },
+          },
+        }),
+      };
+    });
+
+    renderComponent();
+
+    // Check for product title
+    expect(screen.getByText(/Sample Product/i)).toBeInTheDocument();
+
+    // Check for product price
+    expect(screen.getByText("$100")).toBeInTheDocument();
+
+    // Check for product old price
+    expect(screen.getByText("$120")).toBeInTheDocument();
+
+    // Check for product description
+    expect(screen.getByText(/Sample product description/i)).toBeInTheDocument();
+
+    // Check for Sale label
+    expect(screen.getByText(/Sale/i)).toBeInTheDocument();
+
+    // Check for Category
+    expect(screen.getByText(/Category:/i)).toBeInTheDocument();
+    expect(screen.getByText(/electronics/i)).toBeInTheDocument();
+  });
+
+  it("should increase and decrease product quantity when clicking + and - buttons", () => {
+    renderComponent();
+
+    // Check initial quantity
+    expect(screen.getByText("1")).toBeInTheDocument();
+
+    // Click on the increment button
+    const incrementButton = screen.getAllByRole("button")[1];
+    fireEvent.click(incrementButton);
+    // Mock store dispatch function
+    expect(store.getActions()).toContainEqual({
+      type: "product/increamentQuantity",
+      payload: {
+        _id: "1",
+        title: "Sample Product",
+        image: "sample-image-url",
+        price: 100,
+        quantity: 1,
+        description: "Sample product description",
+      },
+    });
+
+    // Click on the decrement button
+    const decrementButton = screen.getAllByRole("button")[0];
+    fireEvent.click(decrementButton);
+    // Mock store dispatch function
+    expect(store.getActions()).toContainEqual({
+      type: "product/decrementQuantity",
+      payload: {
+        _id: "1",
+        title: "Sample Product",
+        image: "sample-image-url",
+        price: 100,
+        quantity: 1,
+        description: "Sample product description",
+      },
+    });
+  });
+
+  it("should dispatch addToCart action and show toast on Add to Cart button click", () => {
+    renderComponent();
+
+    // Click on Add to Cart button
+    const addToCartButton = screen.getByText(/add to cart/i);
+    fireEvent.click(addToCartButton);
+
+    // Check if the correct action was dispatched
+    expect(store.getActions()).toContainEqual({
+      type: "product/addToCart",
+      payload: {
+        _id: "1",
+        title: "Sample Product",
+        image: "sample-image-url",
+        price: 100,
+        quantity: 1,
+        description: "Sample product description",
+      },
+    });
+
+    // Check for toast notification
+    expect(screen.getByText(/Sample Product is added/i)).toBeInTheDocument();
+  });
+});

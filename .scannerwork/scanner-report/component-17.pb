@@ -1,0 +1,1 @@
+ 2webXÇhr*coverage/client/src/data/indextest.js.html

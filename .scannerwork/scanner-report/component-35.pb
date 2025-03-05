@@ -1,0 +1,1 @@
+# 2webXéhr+coverage/client/src/redux/userSlice.js.html

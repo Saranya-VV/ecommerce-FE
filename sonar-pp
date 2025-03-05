@@ -1,0 +1,25 @@
+# # sonar.projectKey=online-shopping
+# # sonar.projectName=online-shopping
+# # sonar.projectVersion=1.0
+# # sonar.language=js
+# # sonar.sources=./src
+# # # sonar.exclusions=node_modules,.env,.env.dev,.env.qa,.env.stage,public,.vscode/*,package-lock.json,log,src/assets/scss/_animation.scss,src/assets/scss/_global.scss,src/components/CoverBanner/CoverBanner.module.scss,
+# # sonar.sourceEncoding=UTF-8
+# # sonar.javascript.lcov.reportPaths=coverage/lcov.info
+# # sonar.token=sqp_128ca665499bdaf48cca78a3b5a58c83ac56678c
+# # # sonar.tests=./src
+# # sonar.host.url=http://localhost:9000
+# # sonar.exclusions=node_modules/*,package-lock.json,package.json,README.md
+
+
+# sonar.host.url=http://localhost:9000
+# sonar.login=sqp_128ca665499bdaf48cca78a3b5a58c83ac56678c
+# sonar.projectKey=online-shopping
+# sonar.projectBaseDir=D:/internal/bench-project-assignments/MERN/online-shopping
+# sonar.projectName=online-shopping
+# sonar.projectVersion=1.0
+# sonar.sources=.
+# sonar.sourceEncoding=UTF-8
+# sonar.exclusions=node_modules/**,webpack.config.js,package-lock.json,package.json,README.md
+# sonar.test.inclusions=src/**/*.test.js
+# sonar.javascript.lcov.reportPaths=coverage/lcov.info

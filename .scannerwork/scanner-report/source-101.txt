@@ -1,0 +1,65 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import configureStore from "./store"; // Import your store file
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import productReducer from "./productSlice";
+import userReducer from "./userSlice";
+import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from "redux-persist";
+
+vi.mock("redux-persist", () => ({
+  persistStore: vi.fn(),
+  persistReducer: vi.fn((_, reducer) => reducer),
+}));
+
+describe("Redux Store", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should create a store with persisted product reducer and user reducer", () => {
+    const { store } = configureStore;
+
+    // Verify the root reducers are set up correctly
+    const state = store.getState();
+    expect(state).toHaveProperty("product");
+    expect(state).toHaveProperty("user");
+  });
+
+  it("should call persistReducer with the correct configuration", () => {
+    expect(persistReducer).toHaveBeenCalledWith(
+      {
+        key: "product",
+        version: 1,
+        storage,
+      },
+      productReducer
+    );
+  });
+
+  it("should configure middleware to ignore specific actions in serializable check", () => {
+    const { store } = configureStore;
+
+    const middlewares = store.middleware;
+    const actionNames = [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER];
+
+    // Validate middleware configuration to ignore redux-persist actions
+    actionNames.forEach((action) => {
+      expect(middlewares).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            serializableCheck: {
+              ignoredActions: expect.arrayContaining(actionNames),
+            },
+          }),
+        ])
+      );
+    });
+  });
+
+  it("should initialize the persistor", () => {
+    const { persistor } = configureStore;
+    expect(persistStore).toHaveBeenCalledWith(configureStore.store);
+    expect(persistor).toBeDefined();
+  });
+});
+

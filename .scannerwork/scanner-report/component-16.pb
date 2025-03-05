@@ -1,0 +1,1 @@
+ 2webXmhr'coverage/client/src/data/index.jsx.html

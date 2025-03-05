@@ -1,0 +1,1 @@
+. 2webXmhr'coverage/client/tailwind.config.js.html

@@ -1,0 +1,6 @@
+projectKey=online-shopping
+serverUrl=http://localhost:9000
+serverVersion=10.5.1.90531
+dashboardUrl=http://localhost:9000/dashboard?id=online-shopping
+ceTaskId=e5085eda-0d3d-4ce9-b030-50e8a451cb6c
+ceTaskUrl=http://localhost:9000/api/ce/task?id=e5085eda-0d3d-4ce9-b030-50e8a451cb6c

@@ -1,0 +1,1 @@
+$ 2webXthr#coverage/client/src/test/index.html

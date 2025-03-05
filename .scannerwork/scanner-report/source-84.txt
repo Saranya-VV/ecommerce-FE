@@ -1,0 +1,185 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router-dom";
+import { describe, it, vi, expect, beforeEach } from "vitest";
+import Cart from "./Cart"; // Adjust import path if needed
+import configureStore from "redux-mock-store";
+import { storePaymentResponse } from "../redux/productSlice";
+import axios from "axios";
+import { loadStripe } from "@stripe/stripe-js";
+
+
+import '@testing-library/jest-dom'; 
+
+
+const mockStore = configureStore([]);
+vi.mock("axios");
+vi.mock("@stripe/stripe-js", () => ({
+  loadStripe: vi.fn(() => ({
+    redirectToCheckout: vi.fn(),
+  })),
+}));
+
+describe("Cart component", () => {
+  let store;
+
+  beforeEach(() => {
+    store = mockStore({
+      product: {
+        productData: [
+          { id: 1, price: 50, quantity: 2 },
+          { id: 2, price: 30, quantity: 1 },
+        ],
+      },
+      user: {
+        user: {
+          email: "test@example.com",
+        },
+      },
+    });
+
+    store.dispatch = vi.fn();
+  });
+
+  it("renders Cart items correctly", () => {
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Cart />
+        </MemoryRouter>
+      </Provider>
+    );
+  
+    // Check that "Cart totals" is present
+    expect(screen.getByRole("heading", { name: "Cart totals" })).toBeInTheDocument();
+  
+    // Check that the subtotal amount is displayed correctly
+    expect(screen.getByText(/Subtotal/i)).toHaveTextContent("$130.00");
+  
+    // Use a more specific method to check for "Total"
+    const totalLabel = screen.getByText("Total", { selector: "p" }); // target only 'p' elements with text "Total"
+    expect(totalLabel).toBeInTheDocument();
+  
+    // Check the amount next to the "Total" label
+    // expect(totalLabel.nextSibling).toHaveTextContent("$130.00");
+  });
+  
+
+  it("renders empty cart message if no product data is available", () => {
+    store = mockStore({
+      product: {
+        productData: [],
+      },
+      user: {
+        user: null,
+      },
+    });
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Cart />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(screen.getByText("Your Cart is Empty. Please go back to Shopping and add products to Cart.")).toBeInTheDocument();
+  });
+
+  it("handles checkout button click", async () => {
+    const mockStripe = await loadStripe();
+    axios.post.mockResolvedValue({
+      data: { id: "sessionId123" },
+    });
+    mockStripe.redirectToCheckout.mockResolvedValue({});
+
+    render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <Cart />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const checkoutButton = screen.getByText(/proceed to checkout/i);
+    fireEvent.click(checkoutButton);
+
+    // expect(axios.post).toHaveBeenCalledWith("http://localhost:8000/pay", {
+    //   items: [
+    //     { id: 1, price: 50, quantity: 2 },
+    //     { id: 2, price: 30, quantity: 1 },
+    //   ],
+    //   email: "test@example.com",
+    // });
+
+    // expect(store.dispatch).toHaveBeenCalledWith(storePaymentResponse({ id: "sessionId123" }));
+    //expect(mockStripe.redirectToCheckout).toHaveBeenCalledWith({ sessionId: "sessionId123" });
+  });
+
+//   it("displays an alert if Stripe redirect fails", async () => {
+//     const mockStripe = await loadStripe();
+//     axios.post.mockResolvedValue({
+//       data: { id: "sessionId123" },
+//     });
+//     mockStripe.redirectToCheckout.mockResolvedValue({ error: { message: "Redirect failed" } });
+//     window.alert = vi.fn();
+
+//     render(
+//       <Provider store={store}>
+//         <MemoryRouter>
+//           <Cart />
+//         </MemoryRouter>
+//       </Provider>
+//     );
+
+//     const checkoutButton = screen.getByText(/proceed to checkout/i);
+//     fireEvent.click(checkoutButton);
+
+//     expect(window.alert).toHaveBeenCalledWith("Redirect failed");
+//   });
+
+//   it("displays an alert if Stripe redirect fails", async () => {
+//     axios.post.mockResolvedValueOnce({ data: { id: "session_id", message:"Stripe session created successfully." } }); // Successful response
+//     window.alert = jest.fn(); // Mock alert
+  
+//     render(
+//       <Provider store={store}>
+//         <MemoryRouter>
+//           <Cart />
+//         </MemoryRouter>
+//       </Provider>
+//     );
+  
+//     // Simulate clicking the checkout button
+//     const checkoutButton = screen.getByRole("button", { name: /checkout/i });
+//     fireEvent.click(checkoutButton);
+  
+//     // Simulate a Stripe error
+//     const stripeError = new Error("Stripe redirect error");
+//     stripe.redirectToCheckout.mockImplementationOnce(() => Promise.resolve({ error: stripeError }));
+  
+//     // Verify alert is called with the Stripe error message
+//     expect(window.alert).toHaveBeenCalledWith("Stripe redirect error");
+//   });
+  
+//   it("displays an alert if axios post fails", async () => {
+//     axios.post.mockRejectedValueOnce(new Error("Axios error")); // Simulate axios error
+//     window.alert = jest.fn(); // Mock alert
+  
+//     render(
+//       <Provider store={store}>
+//         <MemoryRouter>
+//           <Cart />
+//         </MemoryRouter>
+//       </Provider>
+//     );
+  
+//     // Simulate clicking the checkout button
+//     const checkoutButton = screen.getByRole("button", { name: /checkout/i });
+//     fireEvent.click(checkoutButton);
+  
+//     // Verify alert is called for redirect failure
+//     expect(window.alert).toHaveBeenCalledWith("Redirect failed");
+//   });
+  
+});
