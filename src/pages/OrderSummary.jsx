@@ -4,7 +4,6 @@ import "./OrderSummary.css"; // Import a CSS file for custom styling
 const OrderSummary = () => {
   const userId = useSelector((state) => state.user);
   const orderDetails = useSelector((state) => state.product?.paymentInfo);
-  console.log("paymentInfo", orderDetails, userId);
 
   if (!orderDetails?.orders || orderDetails.orders.length === 0) {
     return <div className="loading">Loading...</div>;

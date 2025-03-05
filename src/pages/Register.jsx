@@ -20,7 +20,7 @@ function Register() {
   const handleRegister = async (values) => {
     setError(null);
     try {
-      const response = await axios.post('http://localhost:8000/api/register', {
+      const response = await axios.post('https://ecommerce-be-iota.vercel.app/api/register', {
         name: values.name,
         username: values.username,
         email: values.email,

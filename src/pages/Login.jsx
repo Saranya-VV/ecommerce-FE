@@ -14,7 +14,7 @@ function Login() {
   const handleLogin = async (values) => {
     setError(null);
     try {
-      const response = await axios.post('http://localhost:8000/api/login', {
+      const response = await axios.post('https://ecommerce-be-iota.vercel.app/api/login', {
         username: values.username,
         password: values.password,
       });

@@ -34,14 +34,13 @@ const Cart = () => {
     const stripe = await stripePromise;
   
     try {
-      const response = await axios.post("http://localhost:8000/pay", {
+      const response = await axios.post("https://ecommerce-be-iota.vercel.app/pay", {
         items: productData,
         email: user?.email,
       });
   
       const checkoutSession = response?.data;
       dispatch(storePaymentResponse(checkoutSession));
-      console.log("response", response);
   
       // Redirecting user/customer to Stripe Checkout
       const result = await stripe?.redirectToCheckout({
@@ -54,7 +53,6 @@ const Cart = () => {
       }
     } catch (error) {
       // Handle any errors from the axios post request or Stripe redirect
-      console.error("Checkout error:", error);
       alert("Redirect failed"); // This will be displayed if the checkout fails
     }
   };

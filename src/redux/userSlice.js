@@ -8,7 +8,7 @@ export const fetchUserDetails = createAsyncThunk('user/fetchUserDetails', async 
     if (!token) {
       throw new Error('No access token available');
     }
-    const response = await axios.get('http://localhost:8000/api/user-details', {
+    const response = await axios.get('https://ecommerce-be-iota.vercel.app/api/user-details', {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
@@ -26,7 +26,7 @@ export const updateUserDetails = createAsyncThunk('user/updateUserDetails', asyn
     if (!token) {
       throw new Error('No access token available');
     }
-    const response = await axios.put('http://localhost:8000/api/update-user', values, {
+    const response = await axios.put('https://ecommerce-be-iota.vercel.app/api/update-user', values, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data;
