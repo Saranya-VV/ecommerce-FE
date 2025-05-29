@@ -10,14 +10,6 @@ const navigation = [
     link: "/",
   },
   {
-    title: "shop",
-    link: "/shop",
-  },
-  {
-    title: "Offers",
-    link: "/offers",
-  },
-  {
     title: "My Orders",
     link: "/Orders",
   },
